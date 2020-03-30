@@ -3,27 +3,8 @@
 #include "addr.h"
 #include "blake2-impl.h"
 #include "blake2.h"
-void test(uint8_t c)
-{
-    switch (c)
-    {
-    default:
-        printf("default...\n");
-    case 4:
-        printf("4...\n");
-    case 3:
-         printf("3...\n");
-    case 2:
-        printf("2...\n");
-    case 1: 
-        printf("1...\n");
-    }
-}
+#include "encode.h"
 
-void test2(uint8_t* in)
-{
-    printf("====%ld\n", sizeof(in));
-}
 
 int main(int argc, char** argv) {
     // // 生成私钥
@@ -67,9 +48,18 @@ int main(int argc, char** argv) {
     // char* checksum = bytes_to_hex_str(out);
     // printf("%s %d\n", checksum, '\0');
     // free(checksum);
-    int res = checksum(arr, sizeof(arr), out, sizeof(out));
-    printf("checksum:%s, res=%d\n", bytes_to_hex_str(out, sizeof(out)), res);
-    
+    // int res = checksum(arr, sizeof(arr), out, sizeof(out));
+    // printf("checksum:%s, res=%d\n", bytes_to_hex_str(out, sizeof(out)), res);
+   // 164 233 232 160
+    uint8_t with_checksum[] = {138,126,22,34,2,177,53,213,232,
+                134,56,45,198,89,8,93,248,173,85,
+                43,84,50,1,114,88,4,139,46,37,
+                252,132,107,203,86,157,135,96,194,73, 
+                148,74,178,207,145,195,95,50,124,164 ,233 ,232 ,160};
+    encode_error_t err;
+    uint8_t* raw_addr = base32_encode(with_checksum, sizeof(with_checksum), &err);
+    printf("err=%d\n", err);
+    printf("raw_addr=%s\n", (char*)raw_addr);
 }
 
 

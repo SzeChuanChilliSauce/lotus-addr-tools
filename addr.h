@@ -38,6 +38,11 @@ typedef struct {
     uint8_t data[48];
 } Address;
 
+//
+uint8_t* address_to_string(const Address *addr);
+
+//
+uint8_t* string_to_address(const uint8_t* raw);
 
 //
 Address new_id_address(const uint8_t protocol, uint64_t id); 
