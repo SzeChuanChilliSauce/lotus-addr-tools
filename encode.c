@@ -6,38 +6,20 @@ static const uint8_t bas32_alphabet[32] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h
                                            'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5',
                                            '6', '7'};
 
-// 功能:检查输入
-// 参数:
-//     input_data: 需编码的数据
-//     input_len: 数据长度
-//     encode_error_t: 错误
-// 返回值:无
-static void check_input(const uint8_t* input_data, size_t input_len, encode_error_t* err) {
-    if (input_data == NULL || (input_len == 0 && input_data[0] != '\0')) {
-        *err = ERR_INVALID_INPUT;
-        return ;
-    }
-    if (input_len > MAX_ENCODE_INPUT_LEN) {
-        *err = ERR_INPUT_TOO_BIG;
-        return ;
-    }
 
-    *err = OK;
-    return ;
-}
 
-// 功能:对数据进行base32编码
-// 参数:
-//     input_data: 需编码的数据
-//     input_len: 数据长度
-// 返回值:编码后的数据
-uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error_t* err) 
+
+uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error_t* err)
 {
     encode_error_t error;
     check_input(input_data, input_len, &error);
-    if (error != OK) {
+    if (error != OK)
+    {
         *err = error;
-        return NULL;
+        if (error == ERR_INPUT_EMPTY)
+            return strdup("");
+        else
+            return NULL;
     }
 
     size_t extra = 0;
@@ -63,14 +45,16 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
     size_t output_len = input_len/5*8 + extra;
     // 分配空间
     uint8_t* encoded_data = calloc(output_len + 1, 1);
-    if (encoded_data == NULL) {
+    if (encoded_data == NULL)
+    {
         *err = ERR_BAD_ALLOCATION;
         return NULL;
     }
 
     uint64_t first_byte = 0,second_byte = 0, third_byte = 0, fourth_byte = 0, fifth_byte = 0;
     int i, j = 0;
-    for (i = 0; i + 5 < input_len; i += 5) {
+    for (i = 0; i + 5 < input_len; i += 5)
+    {
         uint64_t num = 0;
 
         first_byte  = i < input_len ? input_data[i] : 0;
@@ -184,3 +168,103 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
 }
 
 
+uint8_t *base32_decode(const uint8_t* input_data, size_t input_len, encode_error_t* err)
+{
+    encode_error_t error;
+    check_input(input_data, input_len, &error);
+    if (error != OK)
+    {
+        *err = error;
+        if (error == ERR_INPUT_EMPTY)
+            return strdup("");
+        else
+            return NULL;
+    }
+
+    uint8_t* temp_data = strdup(input_data);
+    input_len -= strip_space(temp_data);
+
+    if (!is_invalid_base32_input(temp_data, input_len))
+    {
+        *err = ERR_INVALID_BASE32_DATA;
+        free(temp_data);
+        return NULL;
+    }
+
+
+    free(temp_data);
+    *err = OK;
+    return NULL;
+}
+
+// 功能: 检查是否为合法的base32数据
+// 参数:
+//     input: 输入数据
+//     data_len: 输入数据长度
+// 返回值:
+//     0: 不合法
+//     1: 合法
+static bool is_invalid_base32_input(uint8_t* input, size_t data_len)
+{
+    uint8_t *ptr = input;
+    size_t len = 0;
+    while (*ptr)
+    {
+        if (!(*ptr >= 'a' && *ptr <= 'z') && !(*ptr >= '2' && *ptr <= '7'))
+            return false;
+        len++;
+        ptr++;
+    }
+
+    if (len != data_len)
+        return false;
+    else
+        return true;
+}
+
+// 功能:检查输入
+// 参数:
+//     input_data: 需编码的数据
+//     input_len: 数据长度
+//     encode_error_t: 错误
+// 返回值:无
+static void check_input(const uint8_t* input_data, size_t input_len, encode_error_t* err)
+{
+    if (input_data == NULL || (input_len == 0 && input_data[0] != '\0'))
+    {
+        *err = ERR_INPUT_NULL;
+        return ;
+    }
+
+    if (input_data[0] == '\0')
+    {
+        *err = ERR_INPUT_EMPTY;
+        return ;
+    }
+
+    if (input_len > MAX_ENCODE_INPUT_LEN)
+    {
+        *err = ERR_INPUT_TOO_BIG;
+        return ;
+    }
+
+    *err = OK;
+}
+
+// 功能: 统计空格的数量
+// 参数:
+//     input: 输入数据
+// 返回值: 空格数量
+static size_t strip_space(uint8_t* input)
+{
+    uint8_t* ptr = input;
+    size_t count = 0;
+    while (*ptr)
+    {
+        if (*ptr == ' ')
+            count++;
+        ptr++;
+    }
+
+    return count;
+}

@@ -80,7 +80,7 @@ uint8_t* encode_address_to_str(uint8_t network, Address* addr)
 int checksum(const uint8_t* in, size_t in_len, uint8_t* out, size_t out_len)
 {
     // 检查参数
-    if (in == NULL || in_len == 0 || (in[0] == '\0' && in_len!=0)) return -1;
+    if (in == NULL || in_len == 0 || (in[0] == '\0' && in_len != 0)) return -1;
     if (out == NULL || out_len == 0) return -1;
 
     // 计算校验和
