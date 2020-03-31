@@ -36,7 +36,7 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
 //     input_len:数据长度
 //     error:错误
 // 返回值:解码后的数据
-uint8_t *base32_decode(const uint8_t* input_data, size_t input_len, encode_error_t* error);
+uint8_t* base32_decode(const uint8_t* input_data, size_t input_len, encode_error_t* error);
 
 
 

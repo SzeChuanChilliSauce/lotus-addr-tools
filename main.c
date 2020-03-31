@@ -55,83 +55,68 @@ int test_bls()
 
 int test_secp256k1()
 {
-    /* 
-    privkey--> b1ea463b6ab3a9814bced39c3a62b25271f50ff1164c91c121f35bab63100697
-    privkey--> [177 234 70 59 106 179 169 129 75 206 211 156 58 98 178 82 113 245 15 241 22 76 145 193 33 243 91 171 99 16 6 151]
-    pubkey--> 04a66a6607db35487234e8a7b4beb3d0f7b9b477984a4f8418f99613980b6b739721c6a342ac8cc77f3aa823b828c9a3c4c1a4303c32cf7b254a7aa62a874e5ecb
-    pubkey--> [4 166 106 102 7 219 53 72 114 52 232 167 180 190 179 208 247 185 180 119 152 74 79 132 24 249 150 19 152 11 107 115 151 33 198 163 66 172 140 199 127 58 168 35 184 40 201 163 196 193 164 48 60 50 207 123 37 74 122 166 42 135 78 94 203]
-    checksum-->:  [230 214 196 169] e6d6c4a9
-    addr: t1uwtasmeoadscsfudqqvpqnh5mqy4bjevi6iybji
-    uwtasmeoadscsfudqqvpqnh5mqy4bjev i6iybji
-    uwtasmeoadscsfudqqvpqnh5mqy4bjev aaaaaaa
-    payload: [165 166 9 48 142 0 228 41 22 131 132 42 248 52 253 100 49 192 164 149]
-    */
-    // 第一个字节: 协议号
-    // 其他: 公钥
-    uint8_t arr[] = { 1, // protocol
-                    4, 166, 106, 102, 7, 219, 53, 72, 114, 52,
-                    232, 167, 180, 190, 179, 208, 247, 185, 180, 119,
-                    152, 74, 79, 132, 24, 249, 150, 19, 152, 11, 
-                    107, 115, 151, 33, 198, 163, 66, 172, 140, 199, 
-                    127, 58, 168, 35, 184, 40, 201, 163, 196, 193, 
-                    164, 48, 60, 50, 207, 123, 37, 74, 122, 166, 
-                    42, 135, 78, 94, 203};
+    // pubkey---> [4 195 98 172 92 12 212 239 98 97 118 17 122 177 22 107 39 54 136 17 119 72 31 145 51 35 224 35 2 139 152 168 196 163 253 221 32 3 205 186 52 159 133 33 31 104 51 39 130 233 29 170 230 59 141 82 38 31 162 142 228 225 207 244 33]
+    // protocol---> 1
+    // payload---> [253 74 140 167 174 219 84 195 31 156 245 173 142 131 131 73 174 69 246 55]
+    // checksum---> [63 167 184 224]
+    // t17vfizj5o3nkmgh446wwy5a4djgxel5rxh6t3rya
 
-    blake2b_state stat = { 0 };
-    uint8_t  out[4] = { 0 };
+    uint8_t pubkey[] = {4, 195 ,98, 172, 92, 12, 212 ,239 ,98 ,97 ,
+                        118, 17, 122 ,177 ,22 ,107 ,39 ,54 ,136 ,17,
+                        119 ,72 ,31 ,145, 51 ,35 ,224, 35 ,2 ,139 ,
+                        152 ,168 ,196 ,163 ,253 ,221, 32, 3, 205, 186 ,
+                        52, 159, 133 ,33, 31, 104, 51 ,39 ,130 ,233,
+                        29 ,170 ,230 ,59, 141, 82, 38 ,31 ,162 ,142,
+                        228, 225 ,207 ,244 ,33};
 
-    blake2b_init(&stat, sizeof(out));
-    blake2b_update(&stat, arr, sizeof(arr));
-    blake2b_final(&stat, out, sizeof(out));
+    uint8_t payload[20] = { 0 };
 
-    char* checksum = bytes_to_hex_str(out, sizeof(out));
-    printf("checksum:%s\n", checksum);
-    free(checksum);
-    
-
-    uint8_t pubkey[] = {4, 166, 106, 102, 7, 219, 53, 72, 114, 52,
-                        232, 167, 180, 190, 179, 208, 247, 185, 180, 119,
-                        152, 74, 79, 132, 24, 249, 150, 19, 152, 11, 
-                        107, 115, 151, 33, 198, 163, 66, 172, 140, 199, 
-                        127, 58, 168, 35, 184, 40, 201, 163, 196, 193, 
-                        164, 48, 60, 50, 207, 123, 37, 74, 122, 166, 
-                        42, 135, 78, 94, 203};
-    uint8_t pubkey_hash[20] = { 0 };
-    blake2b_init(&stat, sizeof(pubkey_hash));
+    blake2b_state stat = {0};
+    blake2b_init(&stat ,sizeof(payload));
     blake2b_update(&stat, pubkey, sizeof(pubkey));
-    blake2b_final(&stat, pubkey_hash, sizeof(pubkey_hash));
+    blake2b_final(&stat, payload, sizeof(payload));
 
-    for (int i = 0; i < sizeof(pubkey_hash); i++)
+    for (int i = 0; i < sizeof(payload); i++)
     {
-        printf("%d ", pubkey_hash[i]);
+        printf("%d ", payload[i]);
     }
     printf("\n");
 
-    // pubkey_hash(20) + checksum(4) = 24字节
-    uint8_t payload[] = {165, 166, 9, 48, 142, 0, 228, 41, 22, 131, 132, 42, 248, 52, 253, 100, 49, 192, 164, 149, 230, 214, 196, 169};
-    printf("payload_len=%d\n", sizeof(payload));
+    uint8_t checksum[4] = {0};
+    uint8_t proto_payload[] = {1, 253, 74, 140, 167, 174 ,219 ,84, 195 ,31 ,156 ,245 ,173 ,142 ,131 ,131, 73, 174, 69 ,246 ,55};
+    blake2b_init(&stat, sizeof(checksum));
+    blake2b_update(&stat, proto_payload, sizeof(proto_payload));
+    blake2b_final(&stat, checksum, sizeof(checksum));
+
+    for (int i = 0; i < sizeof(checksum); i++)
+    {
+        printf("%d ", checksum[i]);
+    }
+    printf("\n");
+
+    uint8_t payload_checksum[] = {253, 74, 140, 167, 174 ,219 ,84, 195 ,31 ,156 ,245 ,173 ,142 ,131 ,131, 73, 174, 69 ,246 ,55,63 ,167 ,184 ,224};
+
     encode_error_t err;
-    uint8_t* raw_addr = base32_encode(payload, sizeof(payload), &err);
+    uint8_t* raw_addr = base32_encode(payload_checksum, sizeof(payload_checksum), &err);
     if (err != OK)
     {
         printf("decode error:%d\n", err);
         return -1;
     }
     printf("raw_addr=%s\n", (char*)raw_addr);
-
-    char* str = "vi6iybji";
-    uint8_t* raw_bytes = base32_decode(str, strlen(str), &err);
+    uint8_t* raw_addr_bytes = base32_decode(raw_addr, 24, &err);
     if (err != OK)
     {
         printf("decode error:%d\n", err);
         return -1;
     }
 
-    for (int i = 0; i < sizeof(payload); i++)
-    {   
-        printf("%d ", raw_bytes[i]);
+    for (int i = 0; i < 24; i++)
+    {
+        printf("%d ", raw_addr_bytes[i]);
     }
     printf("\n");
+
 }
 
 
@@ -155,7 +140,7 @@ int main(int argc, char** argv) {
     // free(pub_key_str);
 
     test_secp256k1();
-
+    //test_bls();
 }
 
 

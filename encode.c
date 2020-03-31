@@ -91,17 +91,16 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
     switch (input_len % 5)
     {
     case 4:
-        printf("444444444444444\n");
         first_byte  = input_data[input_len-4];
         second_byte = input_data[input_len-3];
         third_byte  = input_data[input_len-2];
         fourth_byte = input_data[input_len-1];
       
-        first_byte = ((first_byte >> 3) << 30) + 
+        num = ((first_byte >> 3) << 30) + 
                      ((((first_byte  & 0x07) << 2) | (second_byte >> 6)) << 25) +
                      (((second_byte  & 0x3f) >> 1) << 20) +
-                     ((((second_byte & 0x01) << 4) | third_byte >> 4) << 15) +
-                     ((((third_byte  & 0x0f) << 1) | fourth_byte >> 7) << 10) +
+                     ((((second_byte & 0x01) << 4) | (third_byte >> 4)) << 15) +
+                     ((((third_byte  & 0x0f) << 1) | (fourth_byte >> 7)) << 10) +
                      (((fourth_byte  & 0x7f) >> 2) << 5) +
                      ((fourth_byte   & 0x03) << 3);
 
@@ -183,48 +182,9 @@ uint8_t *base32_decode(const uint8_t* input_data, size_t input_len, encode_error
             return NULL;
     }
 
-    uint8_t* temp_data = strdup(input_data);
-    input_len -= strip_space(temp_data);
 
-    if (!is_invalid_base32_input(temp_data, input_len))
-    {
-        *err = ERR_INVALID_BASE32_DATA;
-        free(temp_data);
-        return NULL;
-    }
 
-    size_t output_len = (size_t)((input_len + 1.6 - 1) / 1.6);
-    uint8_t* decode_data = calloc(output_len+1, 1);
-    if (decode_data == NULL)
-    {
-        *err = ERR_BAD_ALLOCATION;
-        free(temp_data);
-        return NULL;
-    }
 
-    uint8_t mask = 0, current_byte = 0;
-    int bits_left = 8;
-    for (int i = 0, j = 0; i < input_len; i++)
-    {
-        int num = get_base32_char_index(temp_data[i]);
-        if (bits_left > 5)
-        {
-            mask = num << (bits_left - 5);
-            current_byte = current_byte | mask;
-            bits_left -= 5;
-        }
-        else
-        {
-            mask = num >> (5 - bits_left);
-            current_byte = current_byte | mask;
-            decode_data[j++] = current_byte;
-            current_byte = num << (8 - (5 - bits_left));
-            bits_left += 8 - 5;
-        }   
-    }
-    decode_data[output_len] = '\0';
-
-    free(temp_data);
     *err = OK;
 
     return decode_data;
@@ -248,6 +208,8 @@ static bool is_invalid_base32_input(uint8_t* input, size_t data_len)
         len++;
         ptr++;
     }
+
+    printf("decode len:%ld data_len=%ld\n", len, data_len);
 
     if (len != data_len)
         return false;
