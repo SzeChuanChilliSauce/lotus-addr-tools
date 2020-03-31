@@ -91,6 +91,7 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
     switch (input_len % 5)
     {
     case 4:
+        printf("444444444444444\n");
         first_byte  = input_data[input_len-4];
         second_byte = input_data[input_len-3];
         third_byte  = input_data[input_len-2];
