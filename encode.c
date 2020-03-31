@@ -1,13 +1,14 @@
 #include "encode.h"
-
+#include <stdio.h>
 //
 static const uint8_t bas32_alphabet[32] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
                                            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
                                            'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5',
                                            '6', '7'};
-
-
-
+static size_t strip_space(uint8_t* input);
+static bool is_invalid_base32_input(uint8_t* input, size_t data_len);
+static void check_input(const uint8_t* input_data, size_t input_len, encode_error_t* err);
+static int get_base32_char_index(uint8_t c);
 
 uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error_t* err)
 {
@@ -156,7 +157,7 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
         break;
 
     default:
-        *err = ERR_INVALID_DATA;
+        *err = ERR_INVALID_BASE32_DATA;
         return NULL;    
     }
     
@@ -191,10 +192,41 @@ uint8_t *base32_decode(const uint8_t* input_data, size_t input_len, encode_error
         return NULL;
     }
 
+    size_t output_len = (size_t)((input_len + 1.6 - 1) / 1.6);
+    uint8_t* decode_data = calloc(output_len+1, 1);
+    if (decode_data == NULL)
+    {
+        *err = ERR_BAD_ALLOCATION;
+        free(temp_data);
+        return NULL;
+    }
+
+    uint8_t mask = 0, current_byte = 0;
+    int bits_left = 8;
+    for (int i = 0, j = 0; i < input_len; i++)
+    {
+        int num = get_base32_char_index(temp_data[i]);
+        if (bits_left > 5)
+        {
+            mask = num << (bits_left - 5);
+            current_byte = current_byte | mask;
+            bits_left -= 5;
+        }
+        else
+        {
+            mask = num >> (5 - bits_left);
+            current_byte = current_byte | mask;
+            decode_data[j++] = current_byte;
+            current_byte = num << (8 - (5 - bits_left));
+            bits_left += 8 - 5;
+        }   
+    }
+    decode_data[output_len] = '\0';
 
     free(temp_data);
     *err = OK;
-    return NULL;
+
+    return decode_data;
 }
 
 // 功能: 检查是否为合法的base32数据
@@ -267,4 +299,21 @@ static size_t strip_space(uint8_t* input)
     }
 
     return count;
+}
+
+// 功能: 获取字符在base32字母表中的序号
+// 参数: 
+//     c: base字符
+// 返回值: 字符序号
+static int get_base32_char_index(uint8_t c)
+{
+    for (int i = 0; i < 32; i++)
+    {
+        if (bas32_alphabet[i] == c)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }

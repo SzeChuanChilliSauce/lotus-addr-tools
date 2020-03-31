@@ -23,14 +23,8 @@ int main(int argc, char** argv) {
     // printf("pubkey: %s\n", pub_key_str);
 
     // // 由公钥生成地址
-
-
     // free(pub_key_str);
 
-    // uint64_t i = 0x9DC333C7FE149CCCULL;
-    // char* res = uint64_2_byte(i);
-    // //char* str = byte_2_hex_str();
-    // printf("%s\n", res);
 
     uint8_t arr[] = {3,138,126,22,34,2,177,53,213,232,
                     134,56,45,198,89,8,93,248,173,85,
@@ -39,17 +33,13 @@ int main(int argc, char** argv) {
                     148,74,178,207,145,195,95,50,124};
     blake2b_state stat = {0};
     uint8_t  out[4] = {0};
-    // printf("%ld %ld\n", sizeof(out), sizeof(arr));
-    // blake2b_init(&stat, 4);
-    // blake2b_update(&stat, arr, sizeof(arr));
-    // blake2b_final(&stat, out, 4);
 
-
-    // char* checksum = bytes_to_hex_str(out);
-    // printf("%s %d\n", checksum, '\0');
-    // free(checksum);
-    // int res = checksum(arr, sizeof(arr), out, sizeof(out));
-    // printf("checksum:%s, res=%d\n", bytes_to_hex_str(out, sizeof(out)), res);
+    blake2b_init(&stat, 4);
+    blake2b_update(&stat, arr, sizeof(arr));
+    blake2b_final(&stat, out, 4);
+    char* checksum = bytes_to_hex_str(out, 4);
+    printf("checksum:%s\n", checksum);
+    free(checksum);
 
     uint8_t pubkey_with_checksum[] = {138,126,22,34,2,177,53,213,232,
                                134,56,45,198,89,8,93,248,173,85,
@@ -59,9 +49,28 @@ int main(int argc, char** argv) {
                                164 ,233 ,232 ,160};
     encode_error_t err;
     uint8_t* raw_addr = base32_encode(pubkey_with_checksum, sizeof(pubkey_with_checksum), &err);
-    printf("err=%d\n", err);
+    if (err != OK)
+    {
+        printf("decode error:%d\n", err);
+        return -1;
+    }
     printf("raw_addr=%s\n", (char*)raw_addr);
-    printf("space=%d\n", ' ');
+
+    uint8_t* str = "rj7bmiqcwe25l2eghaw4mwiilx4k2vjlkqzac4syasfs4jp4qrv4wvu5q5qmesmujkzm7eodl4zhzjhj5cqa";
+    uint8_t* raw_bytes = base32_decode(str, strlen(str), &err);
+    if (err != OK)
+    {
+        printf("decode error:%d\n", err);
+        return -1;
+    }
+
+    while (*raw_bytes)
+    {
+        printf("%d ", *raw_bytes);
+        raw_bytes++;
+    }
+    printf("\n");
 }
+
 
 
