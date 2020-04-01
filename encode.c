@@ -1,20 +1,22 @@
 #include "encode.h"
 #include <stdio.h>
-//
-static const uint8_t bas32_alphabet[32] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                                           'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                                           'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5',
-                                           '6', '7'};
+
 static size_t strip_space(uint8_t* input);
 static bool is_invalid_base32_input(uint8_t* input, size_t data_len);
 static void check_input(const uint8_t* input_data, size_t input_len, encode_error_t* err);
 static int get_base32_char_index(uint8_t c);
 
+//
+static const uint8_t bas32_alphabet[32] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                                           'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                                           'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5',
+                                           '6', '7'};
+
 uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error_t* err)
 {
     encode_error_t error;
     check_input(input_data, input_len, &error);
-    if (error != OK)
+    if (error != ENCODE_OK)
     {
         *err = error;
         if (error == ERR_INPUT_EMPTY)
@@ -163,31 +165,16 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
     
 
     encoded_data[output_len] = '\0';
-    *err = OK;
+    *err = ENCODE_OK;
 
     return encoded_data;
 }
 
 
-uint8_t *base32_decode(const uint8_t* input_data, size_t input_len, encode_error_t* err)
+uint8_t* base32_decode(const uint8_t* input_data, size_t input_len, encode_error_t* err)
 {
-    encode_error_t error;
-    check_input(input_data, input_len, &error);
-    if (error != OK)
-    {
-        *err = error;
-        if (error == ERR_INPUT_EMPTY)
-            return strdup("");
-        else
-            return NULL;
-    }
-
-
-
-
-    *err = OK;
-
-    return decode_data;
+    // TODO
+    return NULL;
 }
 
 // 功能: 检查是否为合法的base32数据
@@ -243,7 +230,7 @@ static void check_input(const uint8_t* input_data, size_t input_len, encode_erro
         return ;
     }
 
-    *err = OK;
+    *err = ENCODE_OK;
 }
 
 // 功能: 统计空格的数量

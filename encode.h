@@ -12,12 +12,12 @@
 
 // 错误类型
 typedef enum encode_errno__  {
-    OK = 0,
-    ERR_INPUT_NULL = 1,
-    ERR_INPUT_EMPTY = 2,
-    ERR_INPUT_TOO_BIG = 3,
-    ERR_INVALID_BASE32_DATA = 4,
-    ERR_BAD_ALLOCATION = 5,
+    ENCODE_OK = 0,
+    ERR_INPUT_NULL = 0xE1,
+    ERR_INPUT_EMPTY = 0xE2,
+    ERR_INPUT_TOO_BIG = 0xE3,
+    ERR_INVALID_BASE32_DATA = 0xE4,
+    ERR_BAD_ALLOCATION = 0xE5,
 } encode_error_t;
 
 
