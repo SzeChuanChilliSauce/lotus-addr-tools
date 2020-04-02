@@ -89,7 +89,7 @@ int test_generate_secp256k1_keypair()
     // printf("%d\n", r);
     secp256k1_pubkey pubkey = { 0 }; 
     unsigned char prikey[32] = { 0 }; 
-    secp256k1_ec_privkey_tweak_mul
+
     secp256k1_context* context = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
     int ret = secp256k1_ec_pubkey_create(context, &pubkey, prikey); 
     printf("res=%d\n", ret);
