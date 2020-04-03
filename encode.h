@@ -1,5 +1,5 @@
-#ifndef ENCODE_H
-#define ENCODE_H
+#ifndef LOTUS_ADDR_TOOLS_ENCODE_H
+#define LOTUS_ADDR_TOOLS_ENCODE_H
 
 #include <stdint.h>
 #include <stdlib.h>

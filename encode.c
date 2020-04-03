@@ -20,7 +20,7 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
     {
         *err = error;
         if (error == ERR_INPUT_EMPTY)
-            return strdup("");
+            return (uint8_t*)strdup("");
         else
             return NULL;
     }
@@ -47,7 +47,7 @@ uint8_t* base32_encode(const uint8_t* input_data, size_t input_len, encode_error
     // 编码后的长度(字节)
     size_t output_len = input_len/5*8 + extra;
     // 分配空间
-    uint8_t* encoded_data = calloc(output_len + 1, 1);
+    uint8_t* encoded_data = (uint8_t*)calloc(output_len + 1, 1);
     if (encoded_data == NULL)
     {
         *err = ERR_BAD_ALLOCATION;

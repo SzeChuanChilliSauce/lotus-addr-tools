@@ -8,6 +8,8 @@
 #include "secp256k1_ecdh.h"
 #include "secp256k1_preallocated.h"
 #include "secp256k1_recovery.h"
+#include "ecc_key.h"
+
 
 int test_bls()
 {
@@ -79,28 +81,25 @@ int test_genereate_bls_keypair()
 
 int test_generate_secp256k1_keypair()
 {   
-    // unsigned char nonce[32] = {0};
-    // unsigned char msg[32] = {0};
-    // unsigned char key[32] = {0};
-    // unsigned char algo[16] = {0};
-    // char* str = "cddscdy";
-    // secp256k1_nonce_function pfn;
-    // int r = pfn(nonce, msg, key, algo, str, 0);
-    // printf("%d\n", r);
+    secure_key seckey;
+    private_key_init(&seckey);
+    private_key_gen(&seckey);
+
     secp256k1_pubkey pubkey = { 0 }; 
-    unsigned char prikey[32] = { 0 }; 
-    secp256k1_ec_privkey_tweak_mul
+
+
     secp256k1_context* context = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
-    int ret = secp256k1_ec_pubkey_create(context, &pubkey, prikey); 
+    int ret = secp256k1_ec_pubkey_create(context, &pubkey, &seckey); 
     printf("res=%d\n", ret);
-    printf("privkey:%s\n", bytes_to_hex_str(prikey, 32));
+    printf("privkey:%s\n", bytes_to_hex_str(seckey.privkey, 32));
     printf("pubkey:%s\n", bytes_to_hex_str(pubkey.data, 65));
 }
 
 int main(int argc, char** argv) {
-    //test_bls();
+    // test_bls();
     // test_secp256k1();
     test_generate_secp256k1_keypair();
+    return 0;
 }
 
 

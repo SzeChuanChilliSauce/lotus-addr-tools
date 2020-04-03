@@ -1,5 +1,5 @@
-#ifndef BLAKE2_H
-#define BLAKE2_H
+#ifndef LOTUS_ADDR_TOOLS_BLAKE2_H
+#define LOTUS_ADDR_TOOLS_BLAKE2_H
 
 #include <stddef.h>
 #include <stdint.h>

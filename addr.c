@@ -36,14 +36,14 @@ uint8_t* encode_secp256k1_actor_address(uint8_t network, Secp256k1Address* addr,
     uint8_t* encode_data = base32_encode(payload_checksum, PAYLOAD_HASH_LENGTH+4, &encode_err);
     if (encode_err != ENCODE_OK)
     {
-        *error = encode_err;
-        return strdup("");
+        *error = (address_error_t)encode_err;
+        return (uint8_t*)strdup("");
     }
 
-    uint8_t* addr_str = (uint8_t*)malloc(strlen(encode_data)+2+1);
+    uint8_t* addr_str = (uint8_t*)malloc(strlen((const char*)encode_data)+2+1);
     addr_str[0] = network;
     addr_str[1] = int_to_hex_char(addr->protocol);
-    memcpy(addr_str+2, encode_data, strlen(encode_data));
+    memcpy(addr_str+2, encode_data, strlen((const char*)encode_data));
     
     *error = ADDRESS_OK;
     free(encode_data);
@@ -65,7 +65,7 @@ uint8_t* encode_bls_address(uint8_t network, BlsAddress* addr, address_error_t* 
     if (res == -1)
     {
         *error = ERR_CHECKSUM;
-        return strdup("");
+        return (uint8_t*)strdup("");
     }
 
     // 合并pubkey和checksum
@@ -78,14 +78,14 @@ uint8_t* encode_bls_address(uint8_t network, BlsAddress* addr, address_error_t* 
     uint8_t* encode_data = base32_encode(pubkey_checksum, PUBLIC_KEY_BYTES+4, &encode_err);
     if (encode_err != ENCODE_OK)
     {
-        *error = encode_err;
-        return strdup("");
+        *error = (address_error_t)encode_err;
+        return (uint8_t*)strdup("");
     }
 
-    uint8_t* addr_str = (uint8_t*)malloc(strlen(encode_data)+2+1);
+    uint8_t* addr_str = (uint8_t*)malloc(strlen((const char*)encode_data)+2+1);
     addr_str[0] = network;
     addr_str[1] = int_to_hex_char(addr->protocol);
-    memcpy(addr_str+2, encode_data, strlen(encode_data));
+    memcpy(addr_str+2, encode_data, strlen((const char*)encode_data));
     
     *error = ADDRESS_OK;
     free(encode_data);

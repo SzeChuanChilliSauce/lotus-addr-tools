@@ -1,5 +1,5 @@
-#ifndef BLAKE2_IMPL_H
-#define BLAKE2_IMPL_H
+#ifndef LOTUS_ADDR_TOOLS_BLAKE2_IMPL_H
+#define LOTUS_ADDR_TOOLS_BLAKE2_IMPL_H
 
 #include <stdint.h>
 #include <string.h>

@@ -1,5 +1,5 @@
-#ifndef ADDR_H
-#define ADDR_H
+#ifndef LOTUS_ADDR_TOOLS_ADDR_H
+#define LOTUS_ADDR_TOOLS_ADDR_H
 
 #include <stddef.h>
 #include <stdlib.h>
