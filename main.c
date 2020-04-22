@@ -77,6 +77,22 @@ int test_genereate_bls_keypair()
     PrivateKeyPublicKeyResponse* res_pub_key = private_key_public_key(res_priv_key->private_key);
     printf("------------\n");
     printf("pub_key_len: %ld\n", sizeof(res_pub_key->public_key)/sizeof(res_pub_key->public_key[0]));
+
+
+    BlsAddress addr = {0};
+    addr.protocol = 3;
+    memcpy(addr.data, res_pub_key->public_key, PUBLIC_KEY_BYTES);
+
+    address_error_t err;
+    // 生成地址
+    uint8_t* addr_str = encode_bls_address('t', &addr, &err);
+    if (err != ADDRESS_OK)
+    {
+        printf("error:%d\n", err);
+        return -1;
+    }
+
+    printf("bls_addr=%s\n", addr_str);
 }
 
 int test_generate_secp256k1_keypair()
@@ -98,7 +114,7 @@ int test_generate_secp256k1_keypair()
 int main(int argc, char** argv) {
     // test_bls();
     // test_secp256k1();
-    test_generate_secp256k1_keypair();
+    test_genereate_bls_keypair();
     return 0;
 }
 
