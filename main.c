@@ -102,7 +102,11 @@ int test_generate_secp256k1_keypair()
     private_key_gen(&seckey);
 
     secp256k1_pubkey pubkey = { 0 }; 
+<<<<<<< HEAD:main.c
 
+=======
+    unsigned char prikey[32] = { 0 }; 
+>>>>>>> 4e00dd353909908db0d874db080828af2cf6c72d:test.c
 
     secp256k1_context* context = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
     int ret = secp256k1_ec_pubkey_create(context, &pubkey, &seckey); 
